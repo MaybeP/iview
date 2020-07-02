@@ -81,10 +81,6 @@
                 type: Number,
                 default: 1
             },
-            activeChange: {
-                type: Boolean,
-                default: true
-            },
             value: {
                 type: Number,
                 default: 1
@@ -196,6 +192,9 @@
                 } else {
                     return this.precisionValue;
                 }
+            },
+            deal(){
+                return this.mydelay(this.dealChange,1000);
             }
         },
         methods: {
@@ -257,7 +256,7 @@
 
                 const {min, max} = this;
                 // #6245
-                if ( val!==null && !this.activeChange ) {
+                if ( val!==null) {
                     if (val > max) {
                         val = max;
                     } else if (val < min) {
@@ -292,10 +291,21 @@
                     this.down(e);
                 }
             },
+            mydelay (func, delay) {
+                let timeout=null;
+                return (...args) =>{
+                    if(timeout){
+                        clearTimeout(timeout);
+                    }
+                    timeout=setTimeout(()=>func.apply(this,args),delay);
+                };
+            },
             change (event) {
-                if (event.type == 'change' && this.activeChange) return;
+                if (event.type == 'change' ) this.dealChange(event);
+                if (event.type == 'input' ) this.deal(event);
 
-                if (event.type == 'input' && !this.activeChange) return;
+            },
+            dealChange(event){
                 let val = event.target.value.trim();
                 if (this.parser) {
                     val = this.parser(val);
